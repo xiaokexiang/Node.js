@@ -41,6 +41,10 @@ const server = net.createServer(connection => {
     // 监听60300端口
 }).listen(60300, () => console.log('Listen for subscribers ...'));
 ```
+#### 1s循环创建target文件
+``` bash
+$ watch -n 1 touch target.txt
+```
 
 #### 使用telnet客户端
 ``` bash
@@ -93,4 +97,97 @@ client.on('data', (data) => {
     }
 });
 client.on('error', err => { throw err });
+```
+
+### 3.实现消息分块发送与接收
+*1.数据缓存加工成消息 2.对接收的消息进行处理和响应*
+
+#### 实现自定义分段发送JSON数据的服务端
+
+``` js
+const net = require('net');
+const fs = require('fs');
+net.createServer(connection => {
+    console.log('Subscriber connected');
+
+    let timer;
+    const watcher = fs.watch(process.argv[2], () => {
+        const date = Date.now();
+        // 每监测到文件变化,就将以下两部分数据分次发送到client
+        const firstChunk = '{"type":"watching","timest';
+        const secondChunk = `amp": ${date}}\n`;
+        console.log(`File changed: ${date}`);
+        connection.write(firstChunk);
+        connection.write(secondChunk);
+    })
+
+    connection.on('close', () => {
+        console.log('Subscriber disconnected');
+        watcher.close();
+    });
+}).listen(60300, () => console.log('Listen for subscriber ...'));
+```
+
+#### 实现自定义LDJ(基于JSON)缓存模块解决消息分块问题
+
+``` js
+// 实现一个自定义LDJ缓存模块来解决JSON分块消息的问题
+const EventEmitter = require('events').EventEmitter;
+class LDJClient extends EventEmitter {
+    constructor(stream) {
+        super();
+        // 初始化字符串
+        let buffer = '';
+        stream.on('data', data => {
+            // 将data值赋给buffer
+            buffer += data;
+            let boundary = buffer.indexOf('\n');
+            // 发过来的消息中没有\n就缓存,有\n就发送
+            while (boundary !== -1) {
+                const input = buffer.substring(0, boundary);
+                // 获取\n剩下的内容
+                buffer = buffer.substring(boundary + 1);
+                // 传输一个完整的消息出去
+                this.emit('message', JSON.parse(input));
+                // 继续判断剩下的内容中是否有\n,有就循环执行
+                boundary = buffer.indexOf('\n');
+            }
+        });
+    }
+    // 自定义static方法提供快速创建实例
+    static connect(stream){
+        return new LDJClient(stream);
+    }
+}
+module.exports = LDJClient;
+```
+
+#### 导入&导出自定义类(以LDJClient为例)
+
+* 导出
+``` js
+module.exports = LDJClient;
+```
+
+* 导入
+``` js
+const ldjClient = require('./lib/ldj-client.js').connect(netClient);
+```
+
+#### 自定义客户端接收分段数据
+
+``` js
+// 从原有的直接消费TCP流变成由ldj-client.js处理流
+const netClient = require('net').connect({ port: 60300 });
+const ldjClient = require('./lib/ldj-client.js').connect(netClient);
+ldjClient.on('message', message => {
+    if (message.type === 'watching') {
+        console.log(`Now watching: ${message.timestamp}`);
+    } else if (message.type === 'changed') {
+        const date = new Date(message.timestamp);
+        console.log(`File changed: ${date}`)
+    } else {
+        console.log(`unrecongnized message type: ${message.type}`);
+    }
+});
 ```
