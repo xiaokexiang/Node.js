@@ -1,7 +1,7 @@
 {
-    "name": "nodejs",
+    "name": "node.js",
     "version": "1.0.0",
-    "description": "",
+    "description": "demo",
     "main": "index.js",
     "scripts": {
         "test": "mocha"
@@ -19,5 +19,8 @@
     "homepage": "https://github.com/xiaokexiang/Node.js#readme",
     "devDependencies": {
         "mocha": "^6.1.4"
+    },
+    "dependencies": {
+        "cheerio": "0.22.0"
     }
 }
