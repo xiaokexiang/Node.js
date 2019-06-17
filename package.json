@@ -1,7 +1,7 @@
 {
     "name": "node.js",
     "version": "1.0.0",
-    "description": "demo",
+    "description": "function: transfer data & save data & filesystem & mocha & socket-io",
     "main": "index.js",
     "scripts": {
         "test": "mocha"
@@ -22,6 +22,8 @@
     },
     "dependencies": {
         "cheerio": "0.22.0",
-        "node-dir": "0.1.16"
+        "commander": "2.9.0",
+        "node-dir": "0.1.16",
+        "request": "2.79.0"
     }
 }
