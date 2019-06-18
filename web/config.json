@@ -1,0 +1,9 @@
+{
+    "port": 60702,
+    "es": {
+        "host": "localhost",
+        "port": 9200,
+        "book_index": "books",
+        "bundles_index": "b4"
+    }
+}
