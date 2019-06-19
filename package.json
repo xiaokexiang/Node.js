@@ -4,6 +4,7 @@
     "description": "function: transfer data & save data & filesystem & mocha & socket-io",
     "main": "index.js",
     "scripts": {
+        "start": "nodemon web/express.js",
         "test": "mocha"
     },
     "repository": {

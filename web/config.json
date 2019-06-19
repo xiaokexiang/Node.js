@@ -1,9 +1,9 @@
 {
     "port": 60702,
     "es": {
-        "host": "localhost",
+        "host": "10.193.9.28",
         "port": 9200,
-        "book_index": "books",
-        "bundles_index": "b4"
+        "index": "books",
+        "type": "book"
     }
 }

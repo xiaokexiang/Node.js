@@ -5,6 +5,7 @@ const express = require("express");
 const morgan = require("morgan");
 const nconf = require("nconf");
 const pkg = require("../package.json");
+const api = require("./lib/api.js");
 
 // 设置参数读取顺序 参数变量 -> 环境变量
 nconf.argv().env("__");
@@ -20,5 +21,9 @@ app.use(morgan("dev"));
 app.get("/api/version", (req, res) => {
   res.status(200).json({ version: pkg.version });
 });
+
+// API
+api.search(app, nconf.get("es"));
+api.findAll(app, nconf.get("es"));
 
 app.listen("60702", () => console.log("Ready ..."));
