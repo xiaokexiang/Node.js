@@ -25,5 +25,6 @@ app.get("/api/version", (req, res) => {
 // API
 api.search(app, nconf.get("es"));
 api.findAll(app, nconf.get("es"));
+api.findAllAdvance(app, nconf.get("es"));
 
 app.listen("60702", () => console.log("Ready ..."));

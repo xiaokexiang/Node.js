@@ -185,3 +185,38 @@ function findAll(app, es) {
 module.exports.search = search;
 module.exports.findAll = findAll;
 ```
+
+- 使用 request-promise 实现代码优化
+
+```bash
+# 安装request-promise
+$ npm install --save --save-exact request-promise@4.1.1
+```
+
+```js
+// 优化查询代码
+function findAllAdvance(app, es) {
+  const url = `http://${es.host}:${es.port}/${es.index}/${es.type}/_search`;
+  app.get("/api/books/findAll/advance", (req, res) => {
+    const options = { url, json: true };
+    rp(options)
+      .then(esBody => res.status(200).json(tranferData(esBody)))
+      .catch(({ error }) => res.status(error.status || 502).json(error));
+  });
+}
+
+// 提取数据
+function tranferData(esBody) {
+  const newBody = {
+    name: "",
+    organizer: ""
+  };
+  const arr = new Array();
+  esBody.hits.hits.filter(item => {
+    newBody.name = item._source.name;
+    newBody.organizer = item._source.organizer;
+    arr.push(newBody);
+  });
+  return arr;
+}
+```

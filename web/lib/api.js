@@ -3,7 +3,7 @@
 
 const request = require("request");
 const express = require("express");
-
+const rp = require("request-promise");
 // 使用request模块实现异步请求
 function search(app, es) {
   const url = `http://${es.host}:${es.port}/${es.index}/${es.type}/_search`;
@@ -58,21 +58,36 @@ function findAll(app, es) {
       });
     });
     promise
-      .then(esBody => {
-        const newBody = {
-          name: "",
-          organizer: ""
-        };
-        const arr = new Array();
-        esBody.hits.hits.filter(item => {
-          newBody.name = item._source.name;
-          newBody.organizer = item._source.organizer;
-          arr.push(newBody);
-        });
-        res.status(200).json(arr);
-      })
+      .then(esBody => res.status(200).json(tranferData(esBody)))
       .catch(({ error }) => res.status(error.status || 502).json(error));
   });
 }
+
+// 优化查询代码
+function findAllAdvance(app, es) {
+  const url = `http://${es.host}:${es.port}/${es.index}/${es.type}/_search`;
+  app.get("/api/books/findAll/advance", (req, res) => {
+    const options = { url, json: true };
+    rp(options)
+      .then(esBody => res.status(200).json(tranferData(esBody)))
+      .catch(({ error }) => res.status(error.status || 502).json(error));
+  });
+}
+
+// 提取数据
+function tranferData(esBody) {
+  const newBody = {
+    name: "",
+    organizer: ""
+  };
+  const arr = new Array();
+  esBody.hits.hits.filter(item => {
+    newBody.name = item._source.name;
+    newBody.organizer = item._source.organizer;
+    arr.push(newBody);
+  });
+  return arr;
+}
 module.exports.search = search;
 module.exports.findAll = findAll;
+module.exports.findAllAdvance = findAllAdvance;

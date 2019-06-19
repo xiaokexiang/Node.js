@@ -28,6 +28,8 @@
         "morgan": "1.8.1",
         "nconf": "0.8.4",
         "node-dir": "0.1.16",
-        "request": "2.79.0"
+        "nodemon": "1.11.0",
+        "request": "2.79.0",
+        "request-promise": "4.1.1"
     }
 }
