@@ -4,7 +4,8 @@
 const request = require("request");
 const express = require("express");
 const rp = require("request-promise");
-// 使用request模块实现异步请求
+
+// 搜索方法
 function search(app, es) {
   const url = `http://${es.host}:${es.port}/${es.index}/${es.type}/_search`;
 
@@ -36,6 +37,7 @@ function search(app, es) {
   });
 }
 
+// 查询全部
 function findAll(app, es) {
   const url = `http://${es.host}:${es.port}/${es.index}/${es.type}/_search`;
   app.get("/api/books/findAll", (req, res) => {
@@ -63,7 +65,7 @@ function findAll(app, es) {
   });
 }
 
-// 优化查询代码
+// 优化查询全部代码
 function findAllAdvance(app, es) {
   const url = `http://${es.host}:${es.port}/${es.index}/${es.type}/_search`;
   app.get("/api/books/findAll/advance", (req, res) => {
@@ -71,6 +73,42 @@ function findAllAdvance(app, es) {
     rp(options)
       .then(esBody => res.status(200).json(tranferData(esBody)))
       .catch(({ error }) => res.status(error.status || 502).json(error));
+  });
+}
+
+// 保存全部
+function save(app, es) {
+  const url = `http://${es.host}:${es.port}/${es.index}/${es.type}`;
+
+  app.post("/api/save", (req, res) => {
+    const options = {
+      url,
+      body: req.body,
+      json: true
+    };
+    rp.post(options)
+      .then(esResBody => {
+        res.status(200).json(esResBody);
+      })
+      .catch(({ error }) => res.status(error.status || 502).json(error));
+  });
+}
+
+// 保存全部使用async&await
+function saveAsync(app, es) {
+  const url = `http://${es.host}:${es.port}/${es.index}/${es.type}`;
+  app.post("/api/save/sync", async (req, res) => {
+    const options = {
+      url,
+      body: req.body,
+      json: true
+    };
+    try {
+      const esResBody = await rp(options);
+      res.status(200).json(esResBody);
+    } catch (esError) {
+      res.status(esError.status || 502).json(esError);
+    }
   });
 }
 
@@ -91,3 +129,4 @@ function tranferData(esBody) {
 module.exports.search = search;
 module.exports.findAll = findAll;
 module.exports.findAllAdvance = findAllAdvance;
+module.exports.save = save;

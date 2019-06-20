@@ -97,7 +97,7 @@ $ npm install --save --save-exact nodemon@1.11.0
     }
 ```
 
-- 结果
+- 结果<br/>
   <img src="./nodemon.png"/>
 
 #### 使用 request&promise 实现 Api
@@ -218,5 +218,60 @@ function tranferData(esBody) {
     arr.push(newBody);
   });
   return arr;
+}
+```
+
+- 保存 http 请求的 requestBody 参数
+
+```bash
+$ npm install --save body-parser
+```
+
+```js
+const bodyParser = require("body-parser");
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
+```
+
+```js
+function save(app, es) {
+  const url = `http://${es.host}:${es.port}/${es.index}/${es.type}`;
+
+  app.post("/api/save", (req, res) => {
+    const options = {
+      url,
+      body: req.body,
+      json: true
+    };
+    rp.post(options)
+      .then(esResBody => {
+        res.status(200).json(esResBody);
+      })0
+      .catch(({ error }) => res.status(error.status || 502).json(error));
+  });
+}
+```
+
+#### async & await
+
+_Node.js 8 新特性之一,async 与 await 配合使用,在函数声明中添加 async 关键字,表明函数可以在 Promise 处理时配合 await 来使用_<br/>
+_需要注意的是: Promise 的 reject 抛出的异常需要使用 async 中使用 try catch 进行异常捕获_
+
+```js
+function saveAsync(app, es) {
+  const url = `http://${es.host}:${es.port}/${es.index}/${es.type}`;
+  app.post("/api/save/sync", async (req, res) => {
+    const options = {
+      url,
+      body: req.body,
+      json: true
+    };
+    try {
+      const esResBody = await rp(options);
+      res.status(200).json(esResBody);
+    } catch (esError) {
+      res.status(esError.status || 502).json(esError);
+    }
+  });
 }
 ```

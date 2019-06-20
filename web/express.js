@@ -6,6 +6,7 @@ const morgan = require("morgan");
 const nconf = require("nconf");
 const pkg = require("../package.json");
 const api = require("./lib/api.js");
+const bodyParser = require("body-parser");
 
 // 设置参数读取顺序 参数变量 -> 环境变量
 nconf.argv().env("__");
@@ -17,6 +18,8 @@ nconf.file(nconf.get("conf"));
 const app = new express();
 
 app.use(morgan("dev"));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
 
 app.get("/api/version", (req, res) => {
   res.status(200).json({ version: pkg.version });
@@ -26,5 +29,6 @@ app.get("/api/version", (req, res) => {
 api.search(app, nconf.get("es"));
 api.findAll(app, nconf.get("es"));
 api.findAllAdvance(app, nconf.get("es"));
+api.save(app, nconf.get("es"));
 
 app.listen("60702", () => console.log("Ready ..."));
