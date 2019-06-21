@@ -2,6 +2,7 @@
 
 import "./node_modules/bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap";
+import * as templates from "./app/templates.ts";
 document.body.innerHTML = `
 <div class="container">
     <h1>App Design By Bootstrap</h1>

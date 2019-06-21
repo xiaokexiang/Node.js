@@ -1,7 +1,0 @@
-{
-  "presets": ["es2015"],
-  "plugins": []
-}
-// npm install babel-cli -g
-// npm install babel-cli -save
-// npm install babel-preset-es2015 --save

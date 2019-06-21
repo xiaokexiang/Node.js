@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    // 存放转换好的js文件的目录
+    "outDir": "./dist/",
+    // 为转换好的文件生成sourceMap
+    "sourceMap": true,
+    // 指定哪个模块系统处理依赖
+    "module": "CommonJS",
+    // 转换后文件的es版本
+    "target": "es5",
+    // 指定ts需要使用的内置类型
+    "lib": ["dom", "es2015.promise", "es5"],
+    // 指定ts是否需要对.js进行编译
+    "allowJs": true,
+    // 是否使用严苛模式
+    "alwaysStrict": true
+  }
+}
