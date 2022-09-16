@@ -11,7 +11,7 @@
     "author": "",
     "license": "ISC",
     "devDependencies": {
-        "bootstrap": "3.3.7",
+        "bootstrap": "3.4.1",
         "css-loader": "0.28.7",
         "file-loader": "1.1.5",
         "handlebars": "4.0.10",
